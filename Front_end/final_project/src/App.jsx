@@ -5,7 +5,7 @@ import {
   Routes,
   Route,
   Link,
-  createBrowserRouter,
+  createHashRouter,
 } from "react-router-dom";
 import "./index.css";
 import HomePage from "./Pages/HomePage";
@@ -14,7 +14,7 @@ import AddUserPage from "./Pages/add_user";
 import Recognition from "./Pages/Recognition";
 import PasswordProtection from "./Components/ProtectionDel";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <HomePage />,
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
   {
     path: "/delete-user",
     element: <PasswordProtection />,
-  }
+  },
 ]);
 
 function App() {

@@ -1,5 +1,6 @@
 // src/FaceRecognitionSection.js
 import React from 'react';
+import photo1 from '../assets/1.png';
 
 const Infos = () => {
   return (
@@ -13,7 +14,7 @@ const Infos = () => {
         </p>
         {/* Placeholder for images */}
         <div className="mt-12">
-            <img src="src/assets/1.png" alt="" width={500} className='md:w-1/2 mx-auto'/>
+            <img src={photo1} alt="" width={500} className='md:w-1/2 mx-auto'/>
           {/* <div className="w-full md:w-1/2 h-96 bg-gray-300 rounded-lg shadow-lg mx-auto"></div> */}
         </div>
         {/* Call-to-action button */}

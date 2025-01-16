@@ -1,6 +1,6 @@
 // Import necessary libraries
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -12,44 +12,44 @@ const Header = () => {
         <nav>
           <ul className="flex space-x-6">
             <li>
-              <a
-                href="/"
+              <Link
+                to="/"
                 className="hover:text-gray-200 transition duration-300 ease-in-out text-lg font-medium"
               >
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="Recognition"
+              <Link
+                to="/Recognition"
                 className="hover:text-gray-200 transition duration-300 ease-in-out text-lg font-medium"
               >
                 Begin Recognition
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="add-user"
+              <Link
+                to="/add-user"
                 className="hover:text-gray-200 transition duration-300 ease-in-out text-lg font-medium"
               >
                 Add User
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="delete-user"
+              <Link
+                to="/delete-user"
                 className="hover:text-gray-200 transition duration-300 ease-in-out text-lg font-medium"
               >
                 Delete User
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="reports"
+              <Link
+                to="/reports"
                 className="hover:text-gray-200 transition duration-300 ease-in-out text-lg font-medium"
               >
                 Reports
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
