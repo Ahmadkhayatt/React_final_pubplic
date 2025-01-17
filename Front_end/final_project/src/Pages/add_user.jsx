@@ -5,6 +5,7 @@ const AddUserPage = () => {
   const formRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -25,6 +26,7 @@ const AddUserPage = () => {
     formRef.current.reset();
     setSelectedFile(null);
     setImageUrl(null);
+    setErrorMessage('');
     setFormData({
       id: '',
       name: '',
@@ -45,22 +47,27 @@ const AddUserPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if profile picture is provided
+    if (!selectedFile) {
+      setErrorMessage('Profile picture is required.');
+      return;
+    }
+
+    setErrorMessage('');
+
     // Prepare the data to send
-    const dataToSend = {
-      id: formData.id,
-      name: formData.name,
-      age: parseInt(formData.age, 10), // Ensure age is sent as a number
-      career: formData.career,
-      total_attendance: parseInt(formData.totalAttendance, 10), // Ensure totalAttendance is a number
-    };
+    const dataToSend = new FormData();
+    dataToSend.append('id', formData.id);
+    dataToSend.append('name', formData.name);
+    dataToSend.append('age', formData.age);
+    dataToSend.append('career', formData.career);
+    dataToSend.append('total_attendance', formData.totalAttendance);
+    dataToSend.append('profile-picture', selectedFile);
 
     try {
       const response = await fetch('http://127.0.0.1:5000/add-user', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
+        body: dataToSend,
       });
 
       if (response.ok) {
@@ -179,6 +186,7 @@ const AddUserPage = () => {
                     }
                   }}
                   className="w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 transition duration-300 ease-in-out"
+                  required
                 />
                 {imageUrl && (
                   <div className="overflow-hidden mt-4">
@@ -186,6 +194,9 @@ const AddUserPage = () => {
                   </div>
                 )}
               </div>
+              {errorMessage && (
+                <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+              )}
               <div className="flex flex-col space-y-2">
                 <button
                   type="submit"
