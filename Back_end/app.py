@@ -202,6 +202,7 @@ def get_users():
 
 @app.route('/delete-user/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    user_id = str(user_id).strip()
     # Step 1: Delete user from Firebase database
     try:
         ref = db.reference(f'Employe/{user_id}')
@@ -242,6 +243,7 @@ def delete_user(user_id):
     except Exception as e:
         print(f"Error deleting user from encoder file: {str(e)}")
         return jsonify({'error': f'Failed to remove encoding: {str(e)}'}), 500
+    
 
     # # Step 3: Delete user's image from Supabase bucket (optional)
     # try:
