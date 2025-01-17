@@ -125,8 +125,15 @@ def add_user():
         if not image_file:
             return jsonify({'error': 'Invalid image file'}), 400
 
-        # Read and process the image
-        np_img = np.frombuffer(image_file.read(), np.uint8)
+        # Read the file content into bytes
+        file_content = image_file.read()
+
+        # Check if file_content is empty
+        if not file_content:
+            return jsonify({'error': 'Empty image file'}), 400
+
+        # Process the image from bytes
+        np_img = np.frombuffer(file_content, np.uint8)
         img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
         if img is None:
@@ -181,14 +188,15 @@ def add_user():
         }
         db.reference(f'Employe/{user_id}').set(firebase_data)
 
-        
-    
-    #try to add image to supabase bucket
         # Upload image to Supabase bucket
-        
         image_name = f'{user_id}.jpg'
-        file_content = image_file.read()  # Read the file content once
         response = supabase.storage.from_(bucket_name).upload(image_name, file_content)
+        print(response)
+        
+        return jsonify({'success': 'User added successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
     #     # Add user to Supabase database
     #     supabase.table('users').insert({
