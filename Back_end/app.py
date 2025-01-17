@@ -43,8 +43,11 @@ def recognize_face():
         encodeListKnown, studentIds = encodeListKnownWithIDS
         print(f"Student IDs: {studentIds}")
     else:
-        encodeListKnown = []
-        studentIds = []
+        return jsonify({'error': 'No known faces for recognition. The encoder file is empty.'}), 200
+    print("recognize_face")
+
+    if not encodeListKnown:
+        return jsonify({'error': 'No known faces for recognition. The encoder file is empty.'}), 200
 
 
 
@@ -58,6 +61,7 @@ def recognize_face():
     if img is None:
         return jsonify({'error': 'Invalid image format or corrupted file'}), 400
 
+  
     imgS = cv2.resize(img, (0, 0), None, 0.5, 0.5)
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
 
@@ -179,11 +183,12 @@ def add_user():
 
         
     
-    ##try to add image to supabase bucket
+    #try to add image to supabase bucket
         # Upload image to Supabase bucket
-  
-    #     image_name = f'{user_id}.jpg'
-    #     supabase.storage.from_file(bucket_name, image_name, image_file)
+        
+        image_name = f'{user_id}.jpg'
+        file_content = image_file.read()  # Read the file content once
+        response = supabase.storage.from_(bucket_name).upload(image_name, file_content)
 
     #     # Add user to Supabase database
     #     supabase.table('users').insert({
