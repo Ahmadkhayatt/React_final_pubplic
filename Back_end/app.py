@@ -14,6 +14,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
 #suoabase
 with open("DataBaseFolder/supabaseKey.json") as f:
     supabase_credentials = json.load(f)
@@ -30,20 +31,23 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://finalproject2-b1cc5-default-rtdb.firebaseio.com/'
 })
 
-# Load existing encodings
-encoder_file_path = 'encoderFile.p'
-if os.path.exists(encoder_file_path):
-    with open(encoder_file_path, 'rb') as file:
-        encodeListKnownWithIDS = pickle.load(file)
-    encodeListKnown, studentIds = encodeListKnownWithIDS
-    print(f"Encodings: {encodeListKnown}")
-    print(f"Student IDs: {studentIds}")
-else:
-    encodeListKnown = []
-    studentIds = []
 
 @app.route('/recognize', methods=['POST'])
 def recognize_face():
+    # Load existing encodings
+    # note : this is here because when i delete a user i need to reload the encodings
+    encoder_file_path = 'encoderFile.p'
+    if os.path.exists(encoder_file_path):
+        with open(encoder_file_path, 'rb') as file:
+            encodeListKnownWithIDS = pickle.load(file)
+        encodeListKnown, studentIds = encodeListKnownWithIDS
+        print(f"Student IDs: {studentIds}")
+    else:
+        encodeListKnown = []
+        studentIds = []
+
+
+
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
 
@@ -99,6 +103,15 @@ def recognize_face():
 
 @app.route('/add-user', methods=['POST'])
 def add_user():
+    encoder_file_path = 'encoderFile.p'
+    if os.path.exists(encoder_file_path):
+        with open(encoder_file_path, 'rb') as file:
+            encodeListKnownWithIDS = pickle.load(file)
+        encodeListKnown, studentIds = encodeListKnownWithIDS
+        print(f"Student IDs: {studentIds}")
+    else:
+        encodeListKnown = []
+        studentIds = []
     try:
         # Check for image file in the request
         if 'profile-picture' not in request.files:
@@ -202,12 +215,22 @@ def get_users():
 
 @app.route('/delete-user/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    encoder_file_path = 'encoderFile.p'
+    if os.path.exists(encoder_file_path):
+        with open(encoder_file_path, 'rb') as file:
+            encodeListKnownWithIDS = pickle.load(file)
+        encodeListKnown, studentIds = encodeListKnownWithIDS
+        print(f"Student IDs: {studentIds}")
+    else:
+        encodeListKnown = []
+        studentIds = []
     user_id = str(user_id).strip()
     # Step 1: Delete user from Firebase database
     try:
         ref = db.reference(f'Employe/{user_id}')
         if ref.get():
             ref.delete()
+            firebase_deleted = True
             print(f"User {user_id} successfully deleted from Firebase.")
         else:
             print(f"User {user_id} not found in Firebase.")
@@ -234,6 +257,7 @@ def delete_user(user_id):
                 with open(encoder_file_path, 'wb') as file:
                     pickle.dump([encodeListKnown, studentIds], file)
                 print(f"User {user_id} successfully deleted from the encoder file.")
+                encoding_deleted = True
             else:
                 print(f"User {user_id} not found in encoder file.")
                 return jsonify({'error': 'User ID not found in encodings'}), 404
@@ -243,6 +267,17 @@ def delete_user(user_id):
     except Exception as e:
         print(f"Error deleting user from encoder file: {str(e)}")
         return jsonify({'error': f'Failed to remove encoding: {str(e)}'}), 500
+    print(f"Student IDs: {studentIds}") 
+     # Generate response
+
+    if firebase_deleted and encoding_deleted:
+        return jsonify({'message': f'User {user_id} deleted successfully from both Firebase and encoder file.'}), 200
+    elif firebase_deleted:
+        return jsonify({'message': f'User {user_id} deleted successfully from Firebase but not found in encoder file.'}), 200
+    elif encoding_deleted:
+        return jsonify({'message': f'User {user_id} deleted successfully from encoder file but not found in Firebase.'}), 200
+    else:
+        return jsonify({'error': f'User {user_id} not found in Firebase or encoder file.'}), 404
     
 
     # # Step 3: Delete user's image from Supabase bucket (optional)
