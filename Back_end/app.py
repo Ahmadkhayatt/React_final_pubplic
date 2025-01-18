@@ -281,8 +281,23 @@ def delete_user(user_id):
         print(f"Error deleting user from encoder file: {str(e)}")
         return jsonify({'error': f'Failed to remove encoding: {str(e)}'}), 500
     print(f"Student IDs: {studentIds}") 
-     # Generate response
+     
 
+
+    # # Step 3: Delete user's image from Supabase bucket 
+    try:
+        image_name = f'{user_id}.jpg'
+        response = supabase.storage.from_(bucket_name).remove([image_name])
+        print(f"User {user_id}'s image successfully deleted from Supabase.")
+        print(response)
+        files = supabase.storage.from_(bucket_name).list()
+        print(files)  # Should return file objects if they exist
+        
+    except Exception as e:
+        print(f"Warning: Failed to delete image from Supabase for user {user_id}: {str(e)}")        
+
+   
+# Generate response
     if firebase_deleted and encoding_deleted:
         return jsonify({'message': f'User {user_id} deleted successfully from both Firebase and encoder file.'}), 200
     elif firebase_deleted:
@@ -293,25 +308,6 @@ def delete_user(user_id):
         return jsonify({'error': f'User {user_id} not found in Firebase or encoder file.'}), 404
     
 
-    # # Step 3: Delete user's image from Supabase bucket (optional)
-    # try:
-    #     image_name = f'{user_id}.jpg'
-    #     supabase.storage.from_(bucket_name).remove([image_name])
-    #     print(f"User {user_id}'s image successfully deleted from Supabase.")
-    # except Exception as e:
-    #     print(f"Warning: Failed to delete image from Supabase for user {user_id}: {str(e)}")
-    #     # Non-blocking warning, proceed with success response.
-
-    # # Success response
-    # return jsonify({'message': 'User deleted successfully'}), 200
-
-
-    # # Delete user's image from Supabase bucket
-    # try:
-    #     image_name = f'{user_id}.jpg'
-    #     supabase.storage.from_(bucket_name).remove([image_name])
-    # except Exception as e:
-    #     return jsonify({"error": f"Failed to delete image from Supabase: {str(e)}"}), 500
 
     # # Delete user from Supabase database
     # try:
