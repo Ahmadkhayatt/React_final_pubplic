@@ -12,28 +12,24 @@ const DashboardMetrics = () => {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        // Fetch total number of users
+        // Fetch all rows from the table
         const { data: usersData, error: usersError } = await supabase
           .from('users_main') // Replace with your table name
-          .select('*');
+          .select('id'); // Only fetch the `id` column
 
         if (usersError) {
           console.error('Error fetching users:', usersError.message);
           return;
         }
 
-        const totalUsers = usersData.length;
+        // Count unique IDs (as strings)
+        const uniqueUserIds = new Set(usersData.map((user) => user.id.trim())); // Ensure IDs are trimmed
+        const totalUsers = uniqueUserIds.size;
 
-        // Count the total number of rows
-        const { count: totalAttendance, error: attendanceError } = await supabase
-          .from('users_main') // Replace with your table name
-          .select('*', { count: 'exact' });
+        // Count total rows (total attendance)
+        const totalAttendance = usersData.length;
 
-        if (attendanceError) {
-          console.error('Error counting rows:', attendanceError.message);
-          return;
-        }
-
+        // Calculate average attendance
         const averageAttendance = totalUsers > 0 ? totalAttendance / totalUsers : 0;
 
         // Update metrics state
