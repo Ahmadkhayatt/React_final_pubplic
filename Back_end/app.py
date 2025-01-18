@@ -94,6 +94,17 @@ def recognize_face():
                     db.reference(f'Employe/{student_id}/Total_attendance').set(student_data['Total_attendance'])
                     db.reference(f'Employe/{student_id}/last_attendance_time').set(
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    
+                    supabase.table('users_main').insert({
+                    'id': student_id,
+                    'name': student_data['name'],
+                    'age': student_data['age'],
+                    'career': student_data['career'],
+                    'total_attendance': student_data['Total_attendance'],
+                    'attendance_time': student_data['last_attendance_time'],
+                    # 'profile_picture': f'{SUPABASE_URL}/storage/v1/object/public/{bucket_name}/{image_name}'
+                    }).execute()
+                    
                     return jsonify({
                         'id': student_id,
                         'distance': float(faceDis[matchIndex]),
@@ -192,27 +203,20 @@ def add_user():
         image_name = f'{user_id}.jpg'
         response = supabase.storage.from_(bucket_name).upload(image_name, file_content)
         print(response)
-        
-        return jsonify({'success': 'User added successfully'}), 200
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-    #     # Add user to Supabase database
-    #     supabase.table('users').insert({
-    #         'id': user_id,
-    #         'name': name,
-    #         'age': age,
-    #         'career': career,
-    #         'total_attendance': total_attendance,
-    #         'last_attendance_time': last_attendance_time,
-    #         'profile_picture': f'{SUPABASE_URL}/storage/v1/object/public/{bucket_name}/{image_name}'
-    #     }).execute()
+          # Add user to Supabase database
+        supabase.table('users_main').insert({
+            'id': user_id,
+            'name': name,
+            'age': age,
+            'career': career,
+            'total_attendance': total_attendance,
+            'attendance_time': last_attendance_time,
+            'profile_picture': f'{SUPABASE_URL}/storage/v1/object/public/{bucket_name}/{image_name}'
+        }).execute()
 
         return jsonify({'message': 'User added successfully!'}), 200
-    
-
-
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -294,7 +298,16 @@ def delete_user(user_id):
         print(files)  # Should return file objects if they exist
         
     except Exception as e:
-        print(f"Warning: Failed to delete image from Supabase for user {user_id}: {str(e)}")        
+        print(f"Warning: Failed to delete image from Supabase for user {user_id}: {str(e)}")   
+   
+    #delete from supabase database but this will stay as a comment 
+    #because we are using this database as a history of the users
+   
+    # try:
+    #     supabase.table('users_main').delete().eq('id', user_id).execute()
+    # except Exception as e:
+    #     return jsonify({"error": f"Failed to delete user from Supabase database: {str(e)}"}), 500
+         
 
    
 # Generate response
@@ -307,16 +320,6 @@ def delete_user(user_id):
     else:
         return jsonify({'error': f'User {user_id} not found in Firebase or encoder file.'}), 404
     
-
-
-    # # Delete user from Supabase database
-    # try:
-    #     supabase.table('users').delete().eq('id', user_id).execute()
-    # except Exception as e:
-    #     return jsonify({"error": f"Failed to delete user from Supabase database: {str(e)}"}), 500
-
-    # return jsonify({"message": "User deleted successfully"}), 200
-
 
 
 if __name__ == '__main__':
