@@ -12,6 +12,7 @@ import HomePage from "./Pages/HomePage";
 import ErrorPage from "./Components/errorHandle";
 import AddUserPage from "./Pages/add_user";
 import Recognition from "./Pages/Recognition";
+import ReportsPage from "./Pages/reportsPage";
 import PasswordProtection from "./Components/ProtectionDel";
 
 const router = createHashRouter([
@@ -34,6 +35,10 @@ const router = createHashRouter([
   {
     path: "/delete-user",
     element: <PasswordProtection />,
+  },
+  {
+    path: "/reports",
+    element: <ReportsPage />,
   },
 ]);
 
