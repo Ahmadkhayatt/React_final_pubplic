@@ -51,7 +51,8 @@ A full-stack smart attendance system that uses **real-time face recognition** to
 pip install flask flask-cors opencv-python face_recognition firebase-admin supabase numpy pickle-mixin
 ```
 
-🙌 Author
+
+
 
 Developed by Ahmad khayat
 AI enthusiast • Full Stack Dev • Vision Systems Builder
