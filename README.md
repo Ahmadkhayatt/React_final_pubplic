@@ -98,8 +98,3 @@ SUPABASE_KEY="YOUR_KEY_HERE"
 ```
 Similarly, create a `.env` file in the `frontend` directory for any client-side keys needed.
 
-## 📝 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📢 Acknowledgments
-#### $${\color{#AC3097}This \space project \space was \space made \space with \space \color{red} ❤️ \space by \space @Ahmadkhayatt}$$
